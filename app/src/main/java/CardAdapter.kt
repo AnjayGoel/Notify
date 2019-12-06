@@ -6,15 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.card.view.*
 import org.json.JSONArray
 
 class CardAdapter (val items :JSONArray, val context: Context) : RecyclerView.Adapter<ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var data = cardFromString(items[position].toString())
-        holder?.h?.text = data.head
-        holder?.summary?.text = data.summary
+        var data = DataHandler.cardFromString(items[position].toString())
+        holder.h.text = data.head
+        holder.summary.text = data.summary
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

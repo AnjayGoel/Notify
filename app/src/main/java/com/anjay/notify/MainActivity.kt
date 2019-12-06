@@ -1,23 +1,19 @@
 package com.anjay.notify
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import org.json.*
-import kotlin.io.*
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.view.LayoutInflater
-import android.widget.*
-import androidx.annotation.ContentView
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {
+    lateinit var dh: DataHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,11 +22,11 @@ class MainActivity : AppCompatActivity() {
         var dum = findViewById<TextView>(R.id.dum)
         var mrv = findViewById<RecyclerView>(R.id.mrv)
         var data = JSONObject(assets.open("dummy_data.json").bufferedReader().readText()).getJSONArray("data")
-
+        dh = DataHandler.getInstance(baseContext)!!
 
         var iv_launch = findViewById<Button>(R.id.iv_launch)
         iv_launch.setOnClickListener {
-            actionBar?.hide()
+            supportActionBar?.hide()
             setContentView(R.layout.image_viewer)
             var iv = findViewById<SubsamplingScaleImageView>(R.id.imageView)
             iv.setImage(ImageSource.resource(R.drawable.dummy))
@@ -55,6 +51,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        dum.text = cardFromString(data[0].toString()).head
+        dum.text = DataHandler.cardFromString(data[0].toString()).head
     }
 }
