@@ -4,21 +4,32 @@ import android.content.Context
 import android.widget.Toast
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.nio.charset.Charset
 
 
 class DataHandler {
 
 
     private var dataFile: File
-    private var entries = mutableListOf<Card>()
+    private var entries = mutableListOf<CardModel>()
+    private var lastUpdate: Long = 0
 
-    private fun addEntriesString(s: String) {
-        var ja = JSONArray(s)
-        for (i in 0..ja.length()) {
-            entries.add(cardFromString(ja.getString(i)))
+    fun getCards(): MutableList<CardModel> {
+        return entries
+    }
+
+    private fun populateFromFile() {
+        var s = FileInputStream(dataFile).readTextAndClose()
+        if (s == "") return
+        var jo = JSONObject(s)
+        lastUpdate = jo.getLong("lastUpdate")
+        var ja = jo.getJSONArray("data")
+        for (i in 0 until ja.length()) {
+            entries.add(cardFromObject(ja.getJSONObject(i)))
         }
     }
 
@@ -26,41 +37,42 @@ class DataHandler {
         return entries.size
     }
 
+    private fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
+        return this.bufferedReader(charset).use { it.readText() }
+    }
 
     private constructor(con: Context) {
         dataFile = File(con.getExternalFilesDir(null), "data.json")
-        if (!dataFile.exists()) {
+        if (!dataFile.exists()) {                                                                   //New Install
             Toast.makeText(con, "Welcome", Toast.LENGTH_SHORT).show()
-            dataFile.createNewFile()
+
+            con.assets.open("dummy_data.json").copyTo(FileOutputStream(dataFile))
+            con.assets.open("dummy.jpg")
+                .copyTo(FileOutputStream(File(con.getExternalFilesDir(null), "dummy.jpg")))
+
+
         } else {
-            var sb = StringBuilder()
-            var inr = BufferedReader(FileReader(dataFile))
-            for (i in inr.readLines()) sb.append(i)
-            var s = sb.toString()
-            if (!s.equals("")) {
-                addEntriesString(s)
-            }
+            populateFromFile()
         }
     }
 
     companion object {
 
-        fun cardFromString(s: String): Card {
-            var jo = JSONObject(s)
-            var c = Card()
+        fun cardFromObject(jo: JSONObject): CardModel {
+            var c = CardModel()
             c.head = jo.getString("h")
-            c.summary = jo.getString("text")
-
-            var images = jo.getJSONArray("images")
-
-
-            for (i in 0 until images.length()) {
-                c.images.add(images.getString(i))
-            }
-
+            c.summary = jo.getString("summary")
+            c.time = jo.getLong("time")
             return c
         }
 
+        fun cardsFromArray(ja: JSONArray): MutableList<CardModel> {
+            var arr = mutableListOf<CardModel>()
+            for (i in 0 until ja.length()) {
+                arr.add(cardFromObject(ja.getJSONObject(i)))
+            }
+            return arr
+        }
 
         private var instance: DataHandler? = null
         fun getInstance(con: Context): DataHandler? {
