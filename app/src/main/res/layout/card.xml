@@ -44,4 +44,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/posttime" />
 
+    <include
+        android:id="@+id/image_one"
+        layout="@layout/image_one"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintEnd_toEndOf="@+id/summary"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/posttime"
+        app:layout_constraintTop_toBottomOf="@+id/summary" />
+
+    <include
+        android:id="@+id/image_tow"
+        layout="@layout/image_two"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintEnd_toEndOf="@+id/image_one"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/image_one"
+        app:layout_constraintTop_toBottomOf="@+id/summary" />
+
+    <include
+        android:id="@+id/image_three_or_plus"
+        layout="@layout/image_three_or_plus"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintEnd_toEndOf="@+id/image_tow"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/image_tow"
+        app:layout_constraintTop_toBottomOf="@+id/summary" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,9 +20,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-        dum = findViewById<TextView>(R.id.dum)
-        mrv = findViewById<RecyclerView>(R.id.mrv)
-        data = JSONObject(assets.open("dummy_data.json").bufferedReader().readText())
+        dum = findViewById(R.id.dum)
+        mrv = findViewById(R.id.mrv)
         dh = DataHandler.getInstance(baseContext)!!
 
 

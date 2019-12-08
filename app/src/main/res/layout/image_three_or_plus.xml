@@ -29,21 +29,22 @@
             android:id="@+id/imageView5"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_weight="0.49725"
+
             android:scaleType="centerCrop"
-            android:layout_weight="0.4975"
             app:srcCompat="@drawable/dummy" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.005" />
+            android:layout_weight="0.01" />
 
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_weight="0.49725"
             android:scaleType="centerCrop"
-            android:layout_weight="0.4975"
             app:srcCompat="@drawable/dummy" />
     </LinearLayout>
 </LinearLayout>

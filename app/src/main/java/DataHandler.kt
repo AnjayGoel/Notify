@@ -1,6 +1,7 @@
 package com.anjay.notify
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import org.json.JSONArray
 import org.json.JSONObject
@@ -51,18 +52,31 @@ class DataHandler {
                 .copyTo(FileOutputStream(File(con.getExternalFilesDir(null), "dummy.jpg")))
 
 
-        } else {
-            populateFromFile()
         }
+        populateFromFile()
     }
 
     companion object {
 
         fun cardFromObject(jo: JSONObject): CardModel {
+            Log.d("sb", jo.toString())
             var c = CardModel()
             c.head = jo.getString("h")
             c.summary = jo.getString("summary")
             c.time = jo.getLong("time")
+            var jai: JSONArray = jo.getJSONArray("images")
+            var jav: JSONArray = jo.getJSONArray("videos")
+            var images = mutableListOf<String>()
+            var videos = mutableListOf<String>()
+
+            for (i in 0 until jai.length()) {
+                images.add(jai.getString(i))
+            }
+            for (i in 0 until jav.length()) {
+                videos.add(jav.getString(i))
+            }
+            c.images = images
+            c.videos = videos
             return c
         }
 
