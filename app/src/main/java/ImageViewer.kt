@@ -15,7 +15,7 @@ class ImageViewer : FrameLayout {
 
     constructor(con: Context) : super(con) {
         var mv = LayoutInflater.from(con).inflate(R.layout.image_viewer, null)
-        var iv = mv.findViewById<SubsamplingScaleImageView>(R.id.imageView)
+        var iv = mv.findViewById<SubsamplingScaleImageView>(R.id.ivs_item)
         iv.setImage(ImageSource.asset("dummy.jpg"))
         mv.setOnTouchListener(View.OnTouchListener { v, event ->
             (mv.parent as ViewGroup).removeViewAt(1)

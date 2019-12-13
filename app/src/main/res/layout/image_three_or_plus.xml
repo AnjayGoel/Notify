@@ -9,14 +9,14 @@
         android:id="@+id/imageView3"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="0.55"
         android:scaleType="centerCrop"
-        android:layout_weight="0.4975"
         app:srcCompat="@drawable/dummy" />
 
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.005" />
+        android:layout_weight="0.015" />
 
     <LinearLayout
         android:layout_width="0dp"

@@ -1,6 +1,7 @@
 package com.anjay.notify
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import org.json.JSONObject
 
 
@@ -16,13 +18,24 @@ class MainActivity : AppCompatActivity() {
     lateinit var mrv: RecyclerView
     lateinit var dum: TextView
     lateinit var data: JSONObject
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    lateinit var srv: SwipeRefreshLayout
 
+
+    lateinit var h: Handler
+    var card_count = 0
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        h = Handler(mainLooper)
+
         dum = findViewById(R.id.dum)
         mrv = findViewById(R.id.mrv)
         dh = DataHandler.getInstance(baseContext)!!
+        srv = findViewById(R.id.swiperefresh)
+        srv.setOnRefreshListener {
+        }
 
 
         var iv_launch = findViewById<Button>(R.id.iv_launch)
@@ -40,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
 
         mrv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        mrv.adapter = CardAdapter(dh.getCards(), baseContext)
+        mrv.adapter = CardAdapter(dh.cardDao.getAll(), baseContext)
         mrv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -51,5 +64,23 @@ class MainActivity : AppCompatActivity() {
             }
         })
         dum.text = "Welcome"
+
+        var t = Thread(Runnable {
+            while (true) {
+                if (card_count != dh.getCount()) {
+                    h.post {
+                        mrv.adapter?.notifyDataSetChanged()
+                    }
+                    card_count = dh.getCount()
+                }
+                Thread.sleep(200)
+            }
+        })
+        t.start()
+
+
     }
+
+
+
 }

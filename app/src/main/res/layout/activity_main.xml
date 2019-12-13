@@ -5,6 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:actionViewClass="androidx.appcompat.widget.SearchView"
+    app:showAsAction="ifRoom|collapseActionView"
     tools:context=".MainActivity">
 
     <TextView
@@ -20,19 +22,28 @@
 
         app:layout_constraintVertical_bias="0.001" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mrv"
-        android:layout_width="0dp"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="32dp"
-        android:background="#B4B4B4"
         app:layout_constraintBottom_toTopOf="@+id/iv_launch"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dum"
-        tools:itemCount="100"
-        tools:listitem="@layout/card" />
+        tools:layout_editor_absoluteX="-59dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/mrv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="32dp"
+            android:background="#B4B4B4"
+            app:layout_constraintBottom_toTopOf="@+id/iv_launch"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dum"
+            tools:itemCount="100"
+            tools:listitem="@layout/card" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <Button
         android:id="@+id/iv_launch"
