@@ -19,3 +19,16 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+release {
+    //Enable the proguard
+    minifyEnabled true
+    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), "proguard-rules.pro"
+
+    //Other parameters
+    debuggable false
+    jniDebuggable false
+    renderscriptDebuggable false
+    signingConfig playStoreConfig //Add your own signing config
+    pseudoLocalesEnabled false
+    zipAlignEnabled true
+}

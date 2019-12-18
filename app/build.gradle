@@ -28,12 +28,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    implementation 'com.github.smarteist:autoimageslider:1.3.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
@@ -44,5 +42,7 @@ dependencies {
     implementation 'androidx.core:core:1.2.0-rc01'
     implementation 'androidx.room:room-runtime:2.2.2'
     kapt "android.arch.persistence.room:compiler:1.1.1"
+    implementation 'com.github.smarteist:autoimageslider:1.3.2'
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
 
 }

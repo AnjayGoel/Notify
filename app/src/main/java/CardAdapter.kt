@@ -2,7 +2,6 @@ package com.anjay.notify
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,43 +13,66 @@ import com.smarteist.autoimageslider.IndicatorAnimations
 import com.smarteist.autoimageslider.SliderAnimations
 import com.smarteist.autoimageslider.SliderView
 
-class CardAdapter(val items: List<Card>, val context: Context) :
+class CardAdapter(var items: MutableList<Card>, val con: Context) :
     RecyclerView.Adapter<ViewHolder>() {
 
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var card = items[position]
-        var parent: ViewGroup? = holder.h.parent as? ViewGroup
-        var text = card.body.replace("\\n", "\n")
+        var t = System.currentTimeMillis()
+        var parent = holder.h.parent as ViewGroup
+
+        holder.card = items[position]
+        holder.expanded = false
+
         //heading
-        if (card.head == "") {
-            (parent)?.removeView(holder.h)                                                          //remove if no heading
-        } else holder.h.text = card.head
+        if (holder.card.head == "") {
+            parent.removeView(holder.h)                                                          //remove if no heading
+        } else holder.h.text = holder.card.head
 
         //body
-        if (text.length > 350) {
-            text = text.substring(0, 350) + "..."
-            holder.summary.text = HtmlCompat.fromHtml(
-                "$text<font color='#cccccc'> <u>View More</u></font>",
+        if (holder.card.body.length > 350) {
+            holder.body.text = HtmlCompat.fromHtml(
+                holder.card.body.substring(
+                    0,
+                    350
+                ) + "...<font color='#cccccc'> <u>View More</u></font>",
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
-            holder.summary.setOnClickListener { v ->
-                //view more if text to long
-                var tb = v as TextView
-                tb.text = card.body
-
-                holder.iv_container.removeView(holder.iv_one)
-                holder.iv_container.removeView(holder.iv_two)
-                holder.iv_container.removeView(holder.iv_three_or_plus)
-                holder.iv_container.addView(holder.sv)
-
-
-            }
-
         } else {
-            holder.summary.text = card.body
+            holder.body.text = holder.card.body
         }
 
-        holder.sv.sliderAdapter = SliderImageAdapter(context)
+
+        //date
+        holder.posttime.text = timeFromString(holder.card.timestamp)
+
+        //images
+        holder.ivContainer.removeAllViews()
+        when (holder.card.images.size) {
+            0 -> {
+            }
+            1 -> {
+                holder.ivContainer.addView(holder.ivOne)
+            }
+            2 -> {
+                holder.ivContainer.addView(holder.ivTwo)
+            }
+            3 -> {
+                holder.ivContainer.addView(holder.ivThree)
+            }
+            else -> {
+                holder.ivContainer.addView(holder.ivThree)
+            }
+
+        }
+        lg("" + (System.currentTimeMillis() - t))
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        var holder =
+            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card, parent, false))
+
+        holder.sv.sliderAdapter = SliderImageAdapter(con)
         holder.sv.setIndicatorAnimation(IndicatorAnimations.WORM) //set indicator animation by using SliderLayout.IndicatorAnimations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
         holder.sv.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION)
         holder.sv.autoCycleDirection = SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH
@@ -59,47 +81,11 @@ class CardAdapter(val items: List<Card>, val context: Context) :
         holder.sv.scrollTimeInSec = 4 //set scroll delay in seconds :
         holder.sv.startAutoCycle()
 
-        //date
-        holder.posttime.text = timeFromString(card.timestamp)
-        Log.d("sb", "" + card.images!!.size)
 
-
-        //images
-        holder.iv_container.removeView(holder.sv)
-        when (card.images!!.size) {
-            0 -> {
-                holder.iv_container.removeView(holder.iv_one)
-                holder.iv_container.removeView(holder.iv_two)
-                holder.iv_container.removeView(holder.iv_three_or_plus)
-            }
-            1 -> {
-                holder.iv_container.removeView(holder.iv_two)
-                holder.iv_container.removeView(holder.iv_three_or_plus)
-            }
-            2 -> {
-                holder.iv_container.removeView(holder.iv_one)
-                holder.iv_container.removeView(holder.iv_three_or_plus)
-            }
-            3 -> {
-                holder.iv_container.removeView(holder.iv_two)
-                holder.iv_container.removeView(holder.iv_one)
-            }
-            else -> {
-                holder.iv_container.removeView(holder.iv_two)
-                holder.iv_container.removeView(holder.iv_one)
-            }
-
-        }
-
-
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card, parent, false))
+        return holder
     }
 
 
-    // Gets the number of animals in the list
     override fun getItemCount(): Int {
         return items.size
     }
@@ -107,14 +93,74 @@ class CardAdapter(val items: List<Card>, val context: Context) :
 
 }
 
-class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    // Holds the TextView that will add each animal to
-    var h: TextView = view.findViewById(R.id.h)
-    var posttime: TextView = view.findViewById(R.id.posttime)
-    var summary: TextView = view.findViewById(R.id.summary)
-    var iv_container: ViewGroup = view.findViewById(R.id.iv_container)
-    var iv_one: ViewGroup = view.findViewById(R.id.image_one)
-    var iv_two: ViewGroup = view.findViewById(R.id.image_two)
-    var iv_three_or_plus: ViewGroup = view.findViewById(R.id.image_three_or_plus)
-    var sv: SliderView = view.findViewById(R.id.imageSlider)
+class ViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
+    var expanded = false
+    var card = Card()
+    var h: TextView = root.findViewById(R.id.h)
+    var posttime: TextView = root.findViewById(R.id.posttime)
+    var body: TextView = root.findViewById(R.id.summary)
+    var ivContainer: ViewGroup = root.findViewById(R.id.iv_container)
+    var ivOne: ViewGroup = root.findViewById(R.id.image_one)
+    var ivTwo: ViewGroup = root.findViewById(R.id.image_two)
+    var ivThree: ViewGroup = root.findViewById(R.id.image_three_or_plus)
+    var sv: SliderView = root.findViewById(R.id.imageSlider)
+
+    init {
+
+
+        body.setOnClickListener { v ->
+            //view more if text to long
+            lg("Clicked ${card.body.length} ${card.images.size} ${card.head}")
+
+            if (card.body.length < 350 && card.images.size <= 1) return@setOnClickListener
+            if (expanded) {
+                expanded = false
+                if (card.body.length > 350) {
+                    body.text = HtmlCompat.fromHtml(
+                        card.body.substring(
+                            0,
+                            350
+                        ) + "...<font color='#cccccc'> <u>View More</u></font>",
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                }
+                if (card.images.size > 1) {
+
+                    ivContainer.removeAllViews()
+                    when (card.images.size) {
+                        0 -> {
+                        }
+                        1 -> {
+                            ivContainer.addView(ivOne)
+                        }
+                        2 -> {
+                            ivContainer.addView(ivTwo)
+                        }
+                        3 -> {
+                            ivContainer.addView(ivThree)
+                        }
+                        else -> {
+                            ivContainer.addView(ivThree)
+                        }
+
+                    }
+
+                }
+            } else {
+                expanded = true
+
+                if (card.body.length > 350) {
+                    body.text = HtmlCompat.fromHtml(
+                        card.body + " <font color='#cccccc'> <u>View Less</u></font>",
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                }
+                if (card.images.size > 1) {
+                    ivContainer.removeAllViews()
+                    ivContainer.addView(sv)
+
+                }
+            }
+        }
+    }
 }

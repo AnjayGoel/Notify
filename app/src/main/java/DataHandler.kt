@@ -2,7 +2,6 @@ package com.anjay.notify
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
@@ -13,11 +12,8 @@ class DataHandler {
 
     lateinit var db: AppDatabase
     lateinit var cardDao: CardDao
-    var size = 0
+    var cards = mutableListOf<Card>()
 
-    fun getCards(): List<Card> {
-        return cardDao.getAll()
-    }
 
     private fun populateFromFile(con: Context) {
         var s = con.assets.open("dummy_data.json").readTextAndClose()
@@ -27,61 +23,72 @@ class DataHandler {
         for (i in 0 until ja.length()) {
             cardDao.insert((cardFromObject(ja.getJSONObject(i))))
         }
+        cards = cardDao.getAll().toMutableList()
     }
 
     fun getCards(l: Long): List<Card>? {
         return null
     }
     fun getCount(): Int {
-        return size
+        return cards.size
+    }
+
+    fun addCard(c: Card) {
+        cards.add(c)
+        cardDao.insert(c)
     }
 
     private fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
         return this.bufferedReader(charset).use { it.readText() }
     }
 
-    private constructor(con: Context) {
-        db = AppDatabase.getAppDataBase(context = con)!!
-        cardDao = db.cardDao()
-        if (cardDao.getAll().isEmpty()) {                                                                   //New Install
-            Toast.makeText(con, "Welcome", Toast.LENGTH_SHORT).show()
-            populateFromFile(con)
+
+    fun cardFromObject(jo: JSONObject): Card {
+        Log.d("sb", jo.toString())
+        var c = Card()
+        c.head = jo.getString("h")
+        c.body = jo.getString("body")
+        c.timestamp = jo.getLong("time")
+        var jai: JSONArray = jo.getJSONArray("images")
+        var jav: JSONArray = jo.getJSONArray("videos")
+        var images = mutableListOf<String>()
+        var videos = mutableListOf<String>()
+
+        for (i in 0 until jai.length()) {
+            images.add(jai.getString(i))
         }
-        size = cardDao.getAll().size
+        for (i in 0 until jav.length()) {
+            videos.add(jav.getString(i))
+        }
+        c.images = images
+        c.videos = videos
+        return c
     }
 
+    fun cardsFromArray(ja: JSONArray): MutableList<Card> {
+        var arr = mutableListOf<Card>()
+        for (i in 0 until ja.length()) {
+            arr.add(cardFromObject(ja.getJSONObject(i)))
+        }
+        return arr
+    }
+
+
+    private constructor(con: Context) {
+        Thread(Runnable {
+            db = AppDatabase.getAppDataBase(context = con)!!
+            cardDao = db.cardDao()
+            if (cardDao.getAll().isEmpty()) {
+                populateFromFile(con)
+            } else {
+                cards = cardDao.getAll().toMutableList()
+            }
+        }).start()
+
+    }
+
+
     companion object {
-
-        fun cardFromObject(jo: JSONObject): Card {
-            Log.d("sb", jo.toString())
-            var c = Card()
-            c.head = jo.getString("h")
-            c.body = jo.getString("summary")
-            c.timestamp = jo.getLong("time")
-            var jai: JSONArray = jo.getJSONArray("images")
-            var jav: JSONArray = jo.getJSONArray("videos")
-            var images = mutableListOf<String>()
-            var videos = mutableListOf<String>()
-
-            for (i in 0 until jai.length()) {
-                images.add(jai.getString(i))
-            }
-            for (i in 0 until jav.length()) {
-                videos.add(jav.getString(i))
-            }
-            c.images = images
-            c.videos = videos
-            return c
-        }
-
-        fun cardsFromArray(ja: JSONArray): MutableList<Card> {
-            var arr = mutableListOf<Card>()
-            for (i in 0 until ja.length()) {
-                arr.add(cardFromObject(ja.getJSONObject(i)))
-            }
-            return arr
-        }
-
         private var instance: DataHandler? = null
         fun getInstance(con: Context): DataHandler? {
             if (instance == null) {

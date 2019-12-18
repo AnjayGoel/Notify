@@ -1,8 +1,14 @@
 package com.anjay.notify
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
+
+val TAG = "SilverBug"
+fun lg(s: String) {
+    Log.d(TAG, s)
+}
 fun timeFromString(l: Long): String {
     var now = Calendar.getInstance()
     var t = Calendar.getInstance()
