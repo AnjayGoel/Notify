@@ -1,28 +1,32 @@
 package com.anjay.notify
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
-import com.davemorrissey.labs.subscaleview.ImageSource
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.smarteist.autoimageslider.IndicatorAnimations
+import com.smarteist.autoimageslider.SliderAnimations
+import com.smarteist.autoimageslider.SliderView
 
 class ImageViewer : FrameLayout {
-    lateinit var mv: View
-    lateinit var iv: ImageView
+    var iv: SliderView
 
-
-    constructor(con: Context) : super(con) {
+    constructor(con: Context, images: MutableList<String>) : super(con) {
         var mv = LayoutInflater.from(con).inflate(R.layout.image_viewer, null)
-        var iv = mv.findViewById<SubsamplingScaleImageView>(R.id.ivpz)
-        iv.setImage(ImageSource.asset("dummy.jpg"))
-        mv.setOnTouchListener(View.OnTouchListener { v, event ->
-            (mv.parent as ViewGroup).removeViewAt(1)
-            return@OnTouchListener true
-        })
+        iv = mv.findViewById(R.id.slider)
+        iv.sliderAdapter = SliderImageAdapter(con, images)
+
+        iv.setIndicatorAnimation(IndicatorAnimations.WORM)
+        iv.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION)
+        iv.autoCycleDirection = SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH
+        iv.indicatorSelectedColor = Color.WHITE
+        iv.indicatorUnselectedColor = Color.GRAY
         addView(mv)
+    }
+
+    fun setImages(images: MutableList<String>) {
+        (iv.sliderAdapter as SliderImageAdapter).images = images
+        iv.sliderAdapter.notifyDataSetChanged()
     }
 
 }

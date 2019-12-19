@@ -39,9 +39,8 @@
     },
     {
       "h": " dolor sit amet",
-      "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "body": "<a href='www.google.com'>Click me</a>  ipsum dolor sit amet, consectetur adipiscing elit.",
       "images": [
-        ""
       ],
       "videos": [
         ""

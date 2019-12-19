@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-        android:id="@+id/ivpz"
+    <com.smarteist.autoimageslider.SliderView
+        android:id="@+id/slider"
         android:layout_width="0dp"
         android:layout_height="0dp"
 

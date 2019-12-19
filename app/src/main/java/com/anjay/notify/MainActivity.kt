@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         lg("Content View Initialized " + (System.currentTimeMillis() - t))
         h = Handler(mainLooper)
-        iv = ImageViewer(baseContext)
+        iv = ImageViewer(baseContext, mutableListOf("a", "b"))
         mrv = findViewById(R.id.mrv)
         dh = DataHandler.getInstance(baseContext)!!
         lg("DH Initialized " + (System.currentTimeMillis() - t))
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         lg("IV Listner " + (System.currentTimeMillis() - t))
         mrv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        mrv.adapter = CardAdapter(dh.cards, baseContext)
+        mrv.adapter = CardAdapter(dh.cards, this)
         lg("MRV Adapter Added " + (System.currentTimeMillis() - t))
         mrv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         if (imageViewOnScreen) {
             imageViewOnScreen = false
             (iv.parent as ViewGroup).removeView(iv)
+            supportActionBar?.show()
         }
     }
 }

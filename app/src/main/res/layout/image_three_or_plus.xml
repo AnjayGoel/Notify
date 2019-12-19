@@ -16,7 +16,7 @@
     <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.015" />
+        android:layout_weight="0.007" />
 
     <LinearLayout
         android:layout_width="0dp"

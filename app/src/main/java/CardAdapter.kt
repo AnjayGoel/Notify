@@ -1,32 +1,28 @@
 package com.anjay.notify
 
 import android.content.Context
-import android.graphics.Color
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.anjay.notify.com.anjay.notify.SliderImageAdapter
-import com.smarteist.autoimageslider.IndicatorAnimations
-import com.smarteist.autoimageslider.SliderAnimations
-import com.smarteist.autoimageslider.SliderView
 
 class CardAdapter(var items: MutableList<Card>, val con: Context) :
     RecyclerView.Adapter<ViewHolder>() {
-
+    var ma = con as MainActivity
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var t = System.currentTimeMillis()
-        var parent = holder.h.parent as ViewGroup
+        var parent = holder.h.parent as ViewGroup?
 
         holder.card = items[position]
         holder.expanded = false
-
+        ma.iv.setImages(holder.card.images)
         //heading
         if (holder.card.head == "") {
-            parent.removeView(holder.h)                                                          //remove if no heading
+            parent?.removeView(holder.h)                                                          //remove if no heading
         } else holder.h.text = holder.card.head
 
         //body
@@ -39,7 +35,8 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
         } else {
-            holder.body.text = holder.card.body
+            holder.body.text =
+                HtmlCompat.fromHtml(holder.card.body, HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
 
 
@@ -65,6 +62,11 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
             }
 
         }
+        if (holder.card.images.toString() == "[]") {
+            holder.ivContainer.removeAllViews() //Temp Hack
+        }
+        Linkify.addLinks(holder.body, Linkify.ALL)
+
         lg("" + (System.currentTimeMillis() - t))
     }
 
@@ -72,14 +74,20 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
         var holder =
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card, parent, false))
 
-        holder.sv.sliderAdapter = SliderImageAdapter(con)
-        holder.sv.setIndicatorAnimation(IndicatorAnimations.WORM) //set indicator animation by using SliderLayout.IndicatorAnimations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
-        holder.sv.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION)
-        holder.sv.autoCycleDirection = SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH
-        holder.sv.indicatorSelectedColor = Color.WHITE
-        holder.sv.indicatorUnselectedColor = Color.GRAY
-        holder.sv.scrollTimeInSec = 4 //set scroll delay in seconds :
-        holder.sv.startAutoCycle()
+
+
+        holder.ivContainer.setOnClickListener {
+            ma.supportActionBar?.hide()
+            ma.imageViewOnScreen = true
+            ma.iv.setImages(holder.card.images)
+            ma.addContentView(
+                ma.iv,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
+        }
 
 
         return holder
@@ -98,15 +106,13 @@ class ViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
     var card = Card()
     var h: TextView = root.findViewById(R.id.h)
     var posttime: TextView = root.findViewById(R.id.posttime)
-    var body: TextView = root.findViewById(R.id.summary)
+    var body: TextView = root.findViewById(R.id.body)
     var ivContainer: ViewGroup = root.findViewById(R.id.iv_container)
     var ivOne: ViewGroup = root.findViewById(R.id.image_one)
     var ivTwo: ViewGroup = root.findViewById(R.id.image_two)
     var ivThree: ViewGroup = root.findViewById(R.id.image_three_or_plus)
-    var sv: SliderView = root.findViewById(R.id.imageSlider)
 
     init {
-
 
         body.setOnClickListener { v ->
             //view more if text to long
@@ -124,28 +130,6 @@ class ViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
                         HtmlCompat.FROM_HTML_MODE_LEGACY
                     )
                 }
-                if (card.images.size > 1) {
-
-                    ivContainer.removeAllViews()
-                    when (card.images.size) {
-                        0 -> {
-                        }
-                        1 -> {
-                            ivContainer.addView(ivOne)
-                        }
-                        2 -> {
-                            ivContainer.addView(ivTwo)
-                        }
-                        3 -> {
-                            ivContainer.addView(ivThree)
-                        }
-                        else -> {
-                            ivContainer.addView(ivThree)
-                        }
-
-                    }
-
-                }
             } else {
                 expanded = true
 
@@ -155,12 +139,8 @@ class ViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
                         HtmlCompat.FROM_HTML_MODE_LEGACY
                     )
                 }
-                if (card.images.size > 1) {
-                    ivContainer.removeAllViews()
-                    ivContainer.addView(sv)
-
-                }
             }
+            Linkify.addLinks(body, Linkify.ALL)
         }
     }
 }

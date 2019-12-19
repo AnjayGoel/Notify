@@ -1,18 +1,17 @@
-package com.anjay.notify.com.anjay.notify
+package com.anjay.notify
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import com.anjay.notify.R
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.smarteist.autoimageslider.SliderViewAdapter
-import java.io.File
 
 
-class SliderImageAdapter(private val context: Context) :
+class SliderImageAdapter(private val con: Context, var images: MutableList<String>) :
     SliderViewAdapter<SliderImageAdapter.SliderAdapterVH>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup): SliderAdapterVH {
         val inflate =
@@ -22,26 +21,18 @@ class SliderImageAdapter(private val context: Context) :
 
     override fun onBindViewHolder(viewHolder: SliderAdapterVH, position: Int) {
 
-        viewHolder.imageViewBackground.setImageBitmap(
-            BitmapFactory.decodeFile(
-                File(
-                    context.getExternalFilesDir(
-                        null
-                    ), "dummy.jpg"
-                ).absolutePath
-            )
-        )
+        viewHolder.imageViewBackground.setImage(ImageSource.asset("dummy.jpg"))
 
     }
 
     override fun getCount(): Int {
         //slider view count could be dynamic size
-        return 4
+        return images.size
     }
 
     class SliderAdapterVH(var itemView: View) :
         SliderViewAdapter.ViewHolder(itemView) {
-        var imageViewBackground: ImageView = itemView.findViewById(R.id.ivs_item)
+        var imageViewBackground: SubsamplingScaleImageView = itemView.findViewById(R.id.ivs_item)
 
     }
 }
