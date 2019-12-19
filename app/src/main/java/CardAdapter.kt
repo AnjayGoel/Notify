@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.card.view.*
 
 class CardAdapter(var items: MutableList<Card>, val con: Context) :
     RecyclerView.Adapter<ViewHolder>() {
@@ -26,7 +27,9 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
         } else holder.h.text = holder.card.head
 
         //body
-        if (holder.card.body.length > 350) {
+        if (holder.card.body.isEmpty()) {
+            holder.body.visibility = View.INVISIBLE
+        } else if (holder.card.body.length > 350) {
             holder.body.text = HtmlCompat.fromHtml(
                 holder.card.body.substring(
                     0,
@@ -38,35 +41,34 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
             holder.body.text =
                 HtmlCompat.fromHtml(holder.card.body, HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
-
-
+        Linkify.addLinks(holder.body, Linkify.ALL)
         //date
         holder.posttime.text = timeFromString(holder.card.timestamp)
 
         //images
-        holder.ivContainer.removeAllViews()
-        when (holder.card.images.size) {
-            0 -> {
-            }
-            1 -> {
-                holder.ivContainer.addView(holder.ivOne)
-            }
-            2 -> {
-                holder.ivContainer.addView(holder.ivTwo)
-            }
-            3 -> {
-                holder.ivContainer.addView(holder.ivThree)
-            }
-            else -> {
-                holder.ivContainer.addView(holder.ivThree)
-            }
 
-        }
         if (holder.card.images.toString() == "[]") {
-            holder.ivContainer.removeAllViews() //Temp Hack
-        }
-        Linkify.addLinks(holder.body, Linkify.ALL)
+            parent?.removeView(holder.ivContainer) //Temp Hack
+        } else {
+            holder.ivContainer.removeAllViews()
+            when (holder.card.images.size) {
+                0 -> {
+                }
+                1 -> {
+                    holder.ivContainer.addView(holder.ivOne)
+                }
+                2 -> {
+                    holder.ivContainer.addView(holder.ivTwo)
+                }
+                3 -> {
+                    holder.ivContainer.addView(holder.ivThree)
+                }
+                else -> {
+                    holder.ivContainer.addView(holder.ivThree)
+                }
 
+            }
+        }
         lg("" + (System.currentTimeMillis() - t))
     }
 
@@ -113,7 +115,7 @@ class ViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
     var ivThree: ViewGroup = root.findViewById(R.id.image_three_or_plus)
 
     init {
-
+        root.iv_container.clipToOutline = true
         body.setOnClickListener { v ->
             //view more if text to long
             lg("Clicked ${card.body.length} ${card.images.size} ${card.head}")

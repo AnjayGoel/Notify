@@ -3,12 +3,12 @@ package com.anjay.notify
 import android.os.Bundle
 import android.os.Handler
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,19 +31,6 @@ class MainActivity : AppCompatActivity() {
         lg("DH Initialized " + (System.currentTimeMillis() - t))
         srv = findViewById(R.id.swiperefresh)
         srv.setOnRefreshListener {
-        }
-
-        var ivLaunch = findViewById<Button>(R.id.iv_launch)
-        ivLaunch.setOnClickListener {
-            supportActionBar?.hide()
-            imageViewOnScreen = true
-            addContentView(
-                iv,
-                ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            )
         }
 
         lg("IV Listner " + (System.currentTimeMillis() - t))
@@ -77,6 +64,9 @@ class MainActivity : AppCompatActivity() {
             imageViewOnScreen = false
             (iv.parent as ViewGroup).removeView(iv)
             supportActionBar?.show()
+        } else {
+            finish()
+            exitProcess(0)
         }
     }
 }
