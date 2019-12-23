@@ -23,6 +23,9 @@ class MainActivity : AppCompatActivity() {
         var t = System.currentTimeMillis()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Thread(Runnable {
+            FacebookHandler.getPosts()
+        }).start()
         lg("Content View Initialized " + (System.currentTimeMillis() - t))
         h = Handler(mainLooper)
         iv = ImageViewer(baseContext, mutableListOf("a", "b"))
