@@ -3,11 +3,17 @@ package com.anjay.notify
 import android.os.Bundle
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
+import com.facebook.GraphResponse
+import org.json.JSONObject
+
+
+
+
 
 class FacebookHandler {
     companion object {
         var accessToken: AccessToken = AccessToken(
-            "EAARH1QElcjMBAI63Gd92TF44QJh3JMhCidIwkIPHVKgiXBZB9Pw56pYTBv43tlu0X9jeESOWgoz90vmg5OWkyUl6qvTLU4mLPWsvHQyN8mjTGWrGz5ocgvHOy6T3BGsTphaWdONvgbi95xYp7ZAFkSblRZAGY0KRfSwpq48wimuwUlfqssfnPQmvm9CAExFEq2dEzsJop7maHMRQYB9",
+            "EAARH1QElcjMBAJkL47TmcPt3PX8hqZCTrncG8T14UfVH1ZCZBphiJ4WcXG68xb3ig7mvELWvVdOmvSJOx7dURZA1u5de53eFQQGBwvNJ6F5dwywxsK7ZCSlGurACIWdKO2OOroZAjXSrs2Or01tnAQdCirWvK02ZBQIjbpaoMFgybL1jJgap9zbHuFRjtxf238ZD",
             "1204880079680051",
             "106412340868788",
             null,
@@ -17,19 +23,78 @@ class FacebookHandler {
             null,
             null,
             null
-        )
+        )                                                                                           //Hardcoded token?
 
-        fun getPosts() {
+        private fun cardFromResp(j: JSONObject): Card {
+            /* TODO
+        *   Support Images, Link, Videos and Album.
+        *  */
+            var c = Card()
+            c.id = j.getString("id").split('_')[1].toLong()
+            c.timestamp = timestampFromString(j.getString("updated_time"))
+            c.body = j.getString("message").replace(Regex.fromLiteral("(\\r|\\n|\\r\\n)+"), "\\\\n")
+
+            if (j.has("message_tags")) {
+                var tags = j.getJSONArray("message_tags")
+                c.body += "\n"
+                for (i in 0..tags.length()) {
+                    c.body += tags.getJSONObject(i).getString("name")
+                }
+            }
+
+            return c
+        }
+
+        fun getLatestUpdateTime(): Long {
             val request = GraphRequest.newMeRequest(
                 accessToken
             ) { `object`, response ->
+            }
+
+            val parameters = Bundle()
+            parameters.putString("fields", "posts.limit(1){updated_time}")
+            request.parameters = parameters
+
+            var resp = request.executeAndWait()
+            var ts = resp.jsonObject.getJSONObject("posts").getJSONArray("data").getJSONObject(0)
+                .getString("updated_time")
+
+            return timestampFromString(ts)
+
+        }
+
+        fun getPosts(t: Long): MutableList<Card> {
+            /* TODO
+        *  Handle connection interrupts and other cases
+        *  */
+            var cl = mutableListOf<Card>()
+            var request = GraphRequest.newGraphPathRequest(
+                accessToken,
+                "/me/posts"
+            ) {
                 // Insert your code here
             }
 
             val parameters = Bundle()
-            parameters.putString("fields", "posts{id,message,updated_time,message_tags},id")
+            parameters.putString(
+                "fields",
+                "id,attachments{subattachments,media,media_type,url},message_tags,message,updated_time"
+            )
+            parameters.putString("limit", "10")
             request.parameters = parameters
-            lg(request.executeAndWait().rawResponse)
+
+            do {
+                var resp = request.executeAndWait()
+
+                var posts = resp.jsonObject.getJSONArray("data")
+                for (i in 0..posts.length()) {
+                    var c = cardFromResp(posts.getJSONObject(i))
+                    if (c.timestamp < t) return cl
+                    else cl.add(c)
+                }
+                request = resp.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT)
+            } while (request != null)
+            return cl
         }
     }
 }

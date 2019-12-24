@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "data")
 data class Card(
-    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    @PrimaryKey(autoGenerate = false) var id: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "timestamp") var timestamp: Long = 0,
     @ColumnInfo(name = "head") var head: String = "",
     @ColumnInfo(name = "body") var body: String = "",

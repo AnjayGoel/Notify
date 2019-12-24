@@ -1,6 +1,9 @@
 package com.anjay.notify
 
+import android.content.Context
 import android.util.Log
+import java.io.File
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -9,7 +12,13 @@ val TAG = "SilverBug"
 fun lg(s: String) {
     Log.d(TAG, s)
 }
-fun timeFromString(l: Long): String {
+
+fun timestampFromString(s: String): Long { //time in milliseconds
+    return SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(s.replace('T', ' ').replace("+0000", ""))
+        .time
+}
+
+fun timeToString(l: Long): String { //time in seconds
     var now = Calendar.getInstance()
     var t = Calendar.getInstance()
 
@@ -32,4 +41,24 @@ fun timeFromString(l: Long): String {
         val dateFormat2 = SimpleDateFormat("HH:mm aa")
         return dateFormat.format(t.time) + " at " + dateFormat2.format(t.time)
     }
+}
+
+fun saveURL(url: String, con: Context): String? {
+    try {
+        val url = URL(url)
+        val connection = url.openConnection()
+        var fileStream = File(con.getExternalFilesDir(null), url.file).outputStream()
+        var inpStream = url.openStream()
+
+        connection.connect()
+        inpStream.copyTo(fileStream)
+        fileStream.close()
+        inpStream.close()
+
+
+    } catch (e: Exception) {
+        Log.e("Error: ", e.message)
+    }
+
+    return null
 }

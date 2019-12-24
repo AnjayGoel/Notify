@@ -18,20 +18,26 @@ class MainActivity : AppCompatActivity() {
     var imageViewOnScreen = false
     lateinit var iv: ImageViewer
     lateinit var h: Handler
-    var card_count = 0
+    var cardCount = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         var t = System.currentTimeMillis()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         Thread(Runnable {
-            FacebookHandler.getPosts()
+            FacebookHandler.getPosts(0)
         }).start()
+
         lg("Content View Initialized " + (System.currentTimeMillis() - t))
+
         h = Handler(mainLooper)
         iv = ImageViewer(baseContext, mutableListOf("a", "b"))
         mrv = findViewById(R.id.mrv)
         dh = DataHandler.getInstance(baseContext)!!
+
         lg("DH Initialized " + (System.currentTimeMillis() - t))
+
         srv = findViewById(R.id.swiperefresh)
         srv.setOnRefreshListener {
         }
@@ -40,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         mrv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         mrv.adapter = CardAdapter(dh.cards, this)
         lg("MRV Adapter Added " + (System.currentTimeMillis() - t))
+
         mrv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -50,10 +57,10 @@ class MainActivity : AppCompatActivity() {
         })
         Thread(Runnable {
             while (true) {
-                if (card_count != dh.getCount()) {
+                if (cardCount != dh.getCount()) {
                     (mrv.adapter as CardAdapter).items = dh.cards
                     h.post { mrv.adapter?.notifyDataSetChanged() }
-                    card_count = dh.getCount()
+                    cardCount = dh.getCount()
                     Thread.sleep(200)
                 }
             }

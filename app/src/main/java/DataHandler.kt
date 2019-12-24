@@ -1,6 +1,7 @@
 package com.anjay.notify
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
@@ -13,7 +14,7 @@ class DataHandler {
     lateinit var db: AppDatabase
     lateinit var cardDao: CardDao
     var cards = mutableListOf<Card>()
-
+    lateinit var spe: SharedPreferences.Editor
 
     private fun populateFromFile(con: Context) {
         var s = con.assets.open("dummy_data.json").readTextAndClose()
@@ -78,7 +79,12 @@ class DataHandler {
         Thread(Runnable {
             db = AppDatabase.getAppDataBase(context = con)!!
             cardDao = db.cardDao()
-            if (cardDao.getAll().isEmpty()) {
+            if (cardDao.getAll().isEmpty()) {                                                       //first install
+
+                spe = con.getSharedPreferences("prefs", 0).edit()
+                spe.putLong("FirstInstallTime", System.currentTimeMillis())
+                spe.putLong("DataUpdateTime", 0)
+
                 populateFromFile(con)
             } else {
                 cards = cardDao.getAll().toMutableList()

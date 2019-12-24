@@ -43,7 +43,7 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
         }
         Linkify.addLinks(holder.body, Linkify.ALL)
         //date
-        holder.posttime.text = timeFromString(holder.card.timestamp)
+        holder.posttime.text = timeToString(holder.card.timestamp)
 
         //images
 
