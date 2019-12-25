@@ -9,13 +9,23 @@ import java.util.*
 
 
 val TAG = "SilverBug"
+var STARTTIME: Long = 0
+var LASTTIME: Long = 0
 fun lg(s: String) {
-    Log.d(TAG, s)
+    Log.d(
+        TAG,
+        "---> Total Time:" + (System.currentTimeMillis() - STARTTIME) + " Difference:" + (System.currentTimeMillis() - LASTTIME) + " : " + s
+    )
+    LASTTIME = System.currentTimeMillis()
 }
 
-fun timestampFromString(s: String): Long { //time in milliseconds
-    return SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(s.replace('T', ' ').replace("+0000", ""))
-        .time
+fun timestampFromString(s: String): Long { //time in seconds
+    return SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(
+        s.replace('T', ' ').replace(
+            "+0000",
+            ""
+        )
+    ).time / 1000
 }
 
 fun timeToString(l: Long): String { //time in seconds

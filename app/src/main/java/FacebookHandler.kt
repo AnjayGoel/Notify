@@ -29,7 +29,9 @@ class FacebookHandler {
             /* TODO
         *   Support Images, Link, Videos and Album.
         *  */
+            lg(j.toString())
             var c = Card()
+
             c.id = j.getString("id").split('_')[1].toLong()
             c.timestamp = timestampFromString(j.getString("updated_time"))
             c.body = j.getString("message").replace(Regex.fromLiteral("(\\r|\\n|\\r\\n)+"), "\\\\n")
@@ -37,8 +39,41 @@ class FacebookHandler {
             if (j.has("message_tags")) {
                 var tags = j.getJSONArray("message_tags")
                 c.body += "\n"
-                for (i in 0..tags.length()) {
+                for (i in 0 until tags.length()) {
                     c.body += tags.getJSONObject(i).getString("name")
+                }
+            }
+
+            if (j.has("attachments")) {
+                var dataArr = j.getJSONObject("attachments").getJSONArray("data")
+                for (i in 0 until dataArr.length()) {
+                    var data = dataArr.getJSONObject(i)
+                    when (data.getString("media_type")) {
+                        "link" -> {
+
+                        }
+                        "video" -> {
+                            c.videos.add(data.getJSONObject("media").getString("source"))
+                        }
+                        "photo" -> {
+                            c.images.add(
+                                data.getJSONObject("media").getJSONObject("image").getString(
+                                    "src"
+                                )
+                            )
+                        }
+                        "album" -> {
+                            var dataNested =
+                                data.getJSONObject("subattachments").getJSONArray("data")
+                            for (i in 0 until dataNested.length()) {
+                                c.images.add(
+                                    dataNested.getJSONObject(i).getJSONObject("media").getJSONObject(
+                                        "image"
+                                    ).getString("src")
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -87,7 +122,7 @@ class FacebookHandler {
                 var resp = request.executeAndWait()
 
                 var posts = resp.jsonObject.getJSONArray("data")
-                for (i in 0..posts.length()) {
+                for (i in 0 until posts.length()) {
                     var c = cardFromResp(posts.getJSONObject(i))
                     if (c.timestamp < t) return cl
                     else cl.add(c)
@@ -98,5 +133,3 @@ class FacebookHandler {
         }
     }
 }
-
-

@@ -21,31 +21,30 @@ class MainActivity : AppCompatActivity() {
     var cardCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var t = System.currentTimeMillis()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        STARTTIME = System.currentTimeMillis()
         Thread(Runnable {
             FacebookHandler.getPosts(0)
         }).start()
 
-        lg("Content View Initialized " + (System.currentTimeMillis() - t))
+        lg("Content View Initialized")
 
         h = Handler(mainLooper)
         iv = ImageViewer(baseContext, mutableListOf("a", "b"))
         mrv = findViewById(R.id.mrv)
         dh = DataHandler.getInstance(baseContext)!!
 
-        lg("DH Initialized " + (System.currentTimeMillis() - t))
+        lg("DH Initialized")
 
         srv = findViewById(R.id.swiperefresh)
         srv.setOnRefreshListener {
         }
 
-        lg("IV Listner " + (System.currentTimeMillis() - t))
+        lg("IV Listner ")
         mrv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         mrv.adapter = CardAdapter(dh.cards, this)
-        lg("MRV Adapter Added " + (System.currentTimeMillis() - t))
+        lg("MRV Adapter Added")
 
         mrv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -66,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             }
         }).start()
 
-        lg("End: " + (System.currentTimeMillis() - t))
+        lg("End: ")
     }
 
     override fun onBackPressed() {

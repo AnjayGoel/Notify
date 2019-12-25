@@ -7,6 +7,8 @@ interface CardDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(card: Card)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertArray(cards: MutableList<Card>)
     @Delete
     fun delete(card: Card)
 

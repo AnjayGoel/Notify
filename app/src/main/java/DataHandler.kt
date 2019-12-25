@@ -16,7 +16,7 @@ class DataHandler {
     var cards = mutableListOf<Card>()
     lateinit var spe: SharedPreferences.Editor
 
-    private fun populateFromFile(con: Context) {
+    private fun populateFromFile(con: Context) {                                                    //dummy data for cards
         var s = con.assets.open("dummy_data.json").readTextAndClose()
         if (s == "") return
         var jo = JSONObject(s)
@@ -80,12 +80,11 @@ class DataHandler {
             db = AppDatabase.getAppDataBase(context = con)!!
             cardDao = db.cardDao()
             if (cardDao.getAll().isEmpty()) {                                                       //first install
-
                 spe = con.getSharedPreferences("prefs", 0).edit()
                 spe.putLong("FirstInstallTime", System.currentTimeMillis())
                 spe.putLong("DataUpdateTime", 0)
-
-                populateFromFile(con)
+                cards = FacebookHandler.getPosts(0)
+                cardDao.insertArray(cards)
             } else {
                 cards = cardDao.getAll().toMutableList()
             }
