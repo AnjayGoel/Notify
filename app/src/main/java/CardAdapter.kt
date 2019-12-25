@@ -10,25 +10,32 @@ import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.card.view.*
 
-class CardAdapter(var items: MutableList<Card>, val con: Context) :
+class CardAdapter(var items: MutableList<Card>, con: Context) :
     RecyclerView.Adapter<ViewHolder>() {
     var ma = con as MainActivity
 
+
+    override fun onViewRecycled(holder: ViewHolder) {                                               // Set all views to visible for next card
+        holder.ivContainer.visibility = View.VISIBLE
+        holder.body.visibility = View.VISIBLE
+        holder.h.visibility = View.VISIBLE
+        holder.posttime.visibility = View.VISIBLE
+        super.onViewRecycled(holder)
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var t = System.currentTimeMillis()
-        var parent = holder.h.parent as ViewGroup?
 
         holder.card = items[position]
         holder.expanded = false
         ma.iv.setImages(holder.card.images)
         //heading
         if (holder.card.head == "") {
-            parent?.removeView(holder.h)                                                          //remove if no heading
+            holder.h.visibility = View.GONE
         } else holder.h.text = holder.card.head
 
         //body
         if (holder.card.body.isEmpty()) {
-            holder.body.visibility = View.INVISIBLE
+            holder.body.visibility = View.GONE
         } else if (holder.card.body.length > 350) {
             holder.body.text = HtmlCompat.fromHtml(
                 holder.card.body.substring(
@@ -46,9 +53,8 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
         holder.posttime.text = timeToString(holder.card.timestamp)
 
         //images
-
         if (holder.card.images.toString() == "[]") {
-            parent?.removeView(holder.ivContainer) //Temp Hack
+            holder.ivContainer.visibility = View.GONE
         } else {
             holder.ivContainer.removeAllViews()
             when (holder.card.images.size) {
@@ -69,7 +75,6 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
 
             }
         }
-        lg("" + (System.currentTimeMillis() - t))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -103,7 +108,7 @@ class CardAdapter(var items: MutableList<Card>, val con: Context) :
 
 }
 
-class ViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
+class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
     var expanded = false
     var card = Card()
     var h: TextView = root.findViewById(R.id.h)
@@ -117,8 +122,6 @@ class ViewHolder(var root: View) : RecyclerView.ViewHolder(root) {
     init {
         root.iv_container.clipToOutline = true
         body.setOnClickListener { v ->
-            //view more if text to long
-            lg("Clicked ${card.body.length} ${card.images.size} ${card.head}")
 
             if (card.body.length < 350 && card.images.size <= 1) return@setOnClickListener
             if (expanded) {

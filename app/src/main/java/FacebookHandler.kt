@@ -29,7 +29,6 @@ class FacebookHandler {
             /* TODO
         *   Support Images, Link, Videos and Album.
         *  */
-            lg(j.toString())
             var c = Card()
 
             c.id = j.getString("id").split('_')[1].toLong()
@@ -40,7 +39,9 @@ class FacebookHandler {
                 var tags = j.getJSONArray("message_tags")
                 c.body += "\n"
                 for (i in 0 until tags.length()) {
-                    c.body += tags.getJSONObject(i).getString("name")
+                    if (!tags.getJSONObject(i).has("type")) {
+                        c.body += tags.getJSONObject(i).getString("name")
+                    }
                 }
             }
 
@@ -65,9 +66,9 @@ class FacebookHandler {
                         "album" -> {
                             var dataNested =
                                 data.getJSONObject("subattachments").getJSONArray("data")
-                            for (i in 0 until dataNested.length()) {
+                            for (k in 0 until dataNested.length()) {
                                 c.images.add(
-                                    dataNested.getJSONObject(i).getJSONObject("media").getJSONObject(
+                                    dataNested.getJSONObject(k).getJSONObject("media").getJSONObject(
                                         "image"
                                     ).getString("src")
                                 )
@@ -76,7 +77,6 @@ class FacebookHandler {
                     }
                 }
             }
-
             return c
         }
 
@@ -120,6 +120,10 @@ class FacebookHandler {
 
             do {
                 var resp = request.executeAndWait()
+
+                if (resp == null) {
+                    return mutableListOf()
+                }
 
                 var posts = resp.jsonObject.getJSONArray("data")
                 for (i in 0 until posts.length()) {
