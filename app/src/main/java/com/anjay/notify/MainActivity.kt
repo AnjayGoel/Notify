@@ -12,34 +12,27 @@ import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var dh: DataHandler
     lateinit var mrv: RecyclerView
     lateinit var srv: SwipeRefreshLayout
-    var imageViewOnScreen = false
+    var dh = DataHandler.getInstance(this)
     lateinit var iv: ImageViewer
     lateinit var h: Handler
-    var cardCount = 0
+
+    var imageViewOnScreen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         STARTTIME = System.currentTimeMillis()
 
-
+        NotificationWorker.startNewRequest(this)
 
         h = Handler(mainLooper)
         iv = ImageViewer(baseContext, mutableListOf("a", "b"))
+
         mrv = findViewById(R.id.mrv)
-        dh = DataHandler.getInstance(baseContext)!!
-
-
-        srv = findViewById(R.id.swiperefresh)
-        srv.setOnRefreshListener {
-        }
-
         mrv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        mrv.adapter = CardAdapter(dh.cards, this)
-
+        mrv.adapter = CardAdapter(this)
         mrv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -48,13 +41,26 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+
+        srv = findViewById(R.id.swiperefresh)
+        srv.setOnRefreshListener {
+            Thread(Runnable {
+                var t = FacebookHandler.getLatestUpdateTime()
+                if (t != dh.cardDao.getLastUpdate()) {
+                    var cl = FacebookHandler.getPosts(dh.cardDao.getLastUpdate())
+                    dh.addCards(cl)
+                }
+                srv.isRefreshing = false
+            }).start()
+        }
+
         Thread(Runnable {
             while (true) {
-                if (cardCount != dh.getCount()) {
-                    (mrv.adapter as CardAdapter).items = dh.cards
-                    h.post { mrv.adapter?.notifyDataSetChanged() }
-                    cardCount = dh.getCount()
-                    Thread.sleep(200)
+                if (dh.oldCount != dh.cards.size) {
+                    h.post {
+                        (mrv.adapter as RecyclerView.Adapter).notifyDataSetChanged()
+                        dh.oldCount = dh.cards.size
+                    }
                 }
             }
         }).start()

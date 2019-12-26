@@ -8,11 +8,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.card.view.*
 
-class CardAdapter(var items: MutableList<Card>, con: Context) :
+class CardAdapter(con: Context) :
     RecyclerView.Adapter<ViewHolder>() {
+
     var ma = con as MainActivity
+    var dh = DataHandler.getInstance(con)
 
 
     override fun onViewRecycled(holder: ViewHolder) {                                               // Set all views to visible for next card
@@ -25,7 +26,7 @@ class CardAdapter(var items: MutableList<Card>, con: Context) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.card = items[position]
+        holder.card = dh.cards[position]
         holder.expanded = false
         ma.iv.setImages(holder.card.images)
         //heading
@@ -81,30 +82,56 @@ class CardAdapter(var items: MutableList<Card>, con: Context) :
         var holder =
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card, parent, false))
 
-
-
-        holder.ivContainer.setOnClickListener {
-            ma.supportActionBar?.hide()
-            ma.imageViewOnScreen = true
-            ma.iv.setImages(holder.card.images)
-            ma.addContentView(
-                ma.iv,
-                ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+        with(holder) {
+            ivContainer.setOnClickListener {
+                ma.supportActionBar?.hide()
+                ma.imageViewOnScreen = true
+                ma.iv.setImages(holder.card.images)
+                ma.addContentView(
+                    ma.iv,
+                    ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
                 )
-            )
-        }
+            }
 
+            ivContainer.clipToOutline = true
+            body.setOnClickListener { v ->
+
+                if (card.body.length < 350 && card.images.size <= 1) return@setOnClickListener
+                if (expanded) {
+                    expanded = false
+                    if (card.body.length > 350) {
+                        body.text = HtmlCompat.fromHtml(
+                            card.body.substring(
+                                0,
+                                350
+                            ) + "...<font color='#cccccc'> <u>View More</u></font>",
+                            HtmlCompat.FROM_HTML_MODE_LEGACY
+                        )
+                    }
+                } else {
+                    expanded = true
+
+                    if (card.body.length > 350) {
+                        body.text = HtmlCompat.fromHtml(
+                            card.body + " <font color='#cccccc'> <u>View Less</u></font>",
+                            HtmlCompat.FROM_HTML_MODE_LEGACY
+                        )
+                    }
+                }
+                Linkify.addLinks(body, Linkify.ALL)
+            }
+        }
 
         return holder
     }
 
 
     override fun getItemCount(): Int {
-        return items.size
+        return dh.cards.size
     }
-
 
 }
 
@@ -118,34 +145,4 @@ class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
     var ivOne: ViewGroup = root.findViewById(R.id.image_one)
     var ivTwo: ViewGroup = root.findViewById(R.id.image_two)
     var ivThree: ViewGroup = root.findViewById(R.id.image_three_or_plus)
-
-    init {
-        root.iv_container.clipToOutline = true
-        body.setOnClickListener { v ->
-
-            if (card.body.length < 350 && card.images.size <= 1) return@setOnClickListener
-            if (expanded) {
-                expanded = false
-                if (card.body.length > 350) {
-                    body.text = HtmlCompat.fromHtml(
-                        card.body.substring(
-                            0,
-                            350
-                        ) + "...<font color='#cccccc'> <u>View More</u></font>",
-                        HtmlCompat.FROM_HTML_MODE_LEGACY
-                    )
-                }
-            } else {
-                expanded = true
-
-                if (card.body.length > 350) {
-                    body.text = HtmlCompat.fromHtml(
-                        card.body + " <font color='#cccccc'> <u>View Less</u></font>",
-                        HtmlCompat.FROM_HTML_MODE_LEGACY
-                    )
-                }
-            }
-            Linkify.addLinks(body, Linkify.ALL)
-        }
-    }
 }

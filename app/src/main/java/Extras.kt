@@ -11,6 +11,7 @@ import java.util.*
 val TAG = "SilverBug"
 var STARTTIME: Long = 0
 var LASTTIME: Long = 0
+
 fun lg(s: String) {
     Log.d(
         TAG,

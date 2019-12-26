@@ -96,6 +96,7 @@ class FacebookHandler {
         }
 
         fun getPosts(t: Long): MutableList<Card> {
+
             /* TODO
         *  Handle connection interrupts and other cases
         *  */
@@ -113,7 +114,7 @@ class FacebookHandler {
                 "fields",
                 "id,attachments{subattachments,media,media_type,url},message_tags,message,updated_time"
             )
-            parameters.putString("limit", "1")
+            parameters.putString("limit", "20")
             request.parameters = parameters
             lg("getPosts finished init")
             do {
@@ -133,6 +134,7 @@ class FacebookHandler {
                 lg("Cards made")
                 request = resp.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT)
             } while (request != null)
+            lg(cl.toString())
             return cl
         }
     }
