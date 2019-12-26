@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.com.anjay.notify
 
 import android.os.Bundle
 import com.facebook.AccessToken
@@ -32,7 +32,8 @@ class FacebookHandler {
             var c = Card()
 
             c.id = j.getString("id").split('_')[1].toLong()
-            c.timestamp = timestampFromString(j.getString("updated_time"))
+            c.timestamp =
+                timestampFromString(j.getString("updated_time"))
             c.body = j.getString("message").replace(Regex.fromLiteral("(\\r|\\n|\\r\\n)+"), "\\\\n")
 
             if (j.has("message_tags")) {
@@ -102,6 +103,7 @@ class FacebookHandler {
             /* TODO
         *  Handle connection interrupts and other cases
         *  */
+            lg("getPosts Init")
             var cl = mutableListOf<Card>()
             var request = GraphRequest.newGraphPathRequest(
                 accessToken,
@@ -117,20 +119,25 @@ class FacebookHandler {
             )
             parameters.putString("limit", "10")
             request.parameters = parameters
-
+            lg("getPosts finished init")
             do {
                 var resp = request.executeAndWait()
-
+                lg("resp recieved")
                 if (resp == null) {
                     return mutableListOf()
                 }
 
                 var posts = resp.jsonObject.getJSONArray("data")
                 for (i in 0 until posts.length()) {
-                    var c = cardFromResp(posts.getJSONObject(i))
+
+                    var c =
+                        cardFromResp(
+                            posts.getJSONObject(i)
+                        )
                     if (c.timestamp < t) return cl
                     else cl.add(c)
                 }
+                lg("Cards made")
                 request = resp.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT)
             } while (request != null)
             return cl

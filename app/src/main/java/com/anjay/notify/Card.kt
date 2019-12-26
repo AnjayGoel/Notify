@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.com.anjay.notify
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

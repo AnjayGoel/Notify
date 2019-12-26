@@ -1,9 +1,11 @@
-package com.anjay.notify
+package com.anjay.notify.com.anjay.notify
 
 import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import com.anjay.notify.R
+import com.anjay.notify.SliderImageAdapter
 import com.smarteist.autoimageslider.IndicatorAnimations
 import com.smarteist.autoimageslider.SliderAnimations
 import com.smarteist.autoimageslider.SliderView

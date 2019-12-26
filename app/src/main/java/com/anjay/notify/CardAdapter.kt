@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.com.anjay.notify
 
 import android.content.Context
 import android.text.util.Linkify
@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.anjay.notify.MainActivity
+import com.anjay.notify.R
 import kotlinx.android.synthetic.main.card.view.*
 
 class CardAdapter(var items: MutableList<Card>, con: Context) :
@@ -79,7 +81,13 @@ class CardAdapter(var items: MutableList<Card>, con: Context) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         var holder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card, parent, false))
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.card,
+                    parent,
+                    false
+                )
+            )
 
 
 

@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.com.anjay.notify
 
 import android.content.Context
 import android.util.Log
