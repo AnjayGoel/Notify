@@ -3,7 +3,6 @@ package com.anjay.notify
 import android.os.Bundle
 import android.os.Handler
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,14 +32,6 @@ class MainActivity : AppCompatActivity() {
         mrv = findViewById(R.id.mrv)
         mrv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         mrv.adapter = CardAdapter(this)
-        mrv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (!recyclerView.canScrollVertically(1) && dy > 0) {
-                    Toast.makeText(baseContext, "Last", Toast.LENGTH_LONG).show()
-                }
-            }
-        })
 
         srv = findViewById(R.id.swiperefresh)
         srv.setOnRefreshListener {
@@ -55,9 +46,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         Thread(Runnable {
+            //
             while (true) {
                 if (dh.oldCount != dh.cards.size) {
                     h.post {
+                        dh.cards.sortByDescending { it -> it.timestamp }
                         (mrv.adapter as RecyclerView.Adapter).notifyDataSetChanged()
                         dh.oldCount = dh.cards.size
                     }

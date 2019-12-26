@@ -9,14 +9,19 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class CardAdapter(con: Context) :
-    RecyclerView.Adapter<ViewHolder>() {
+class CardAdapter(var con: Context) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var ma = con as MainActivity
     var dh = DataHandler.getInstance(con)
 
 
-    override fun onViewRecycled(holder: ViewHolder) {                                               // Set all views to visible for next card
+    override fun onViewRecycled(holderGeneral: RecyclerView.ViewHolder) {
+        // Set all views to visible for next card
+        if (holderGeneral !is CardHolder) {
+            return
+        }
+        var holder = holderGeneral
         holder.ivContainer.visibility = View.VISIBLE
         holder.body.visibility = View.VISIBLE
         holder.h.visibility = View.VISIBLE
@@ -24,8 +29,13 @@ class CardAdapter(con: Context) :
         super.onViewRecycled(holder)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holderGeneral: RecyclerView.ViewHolder, position: Int) {
+        lg("Binding $position")
+        if (position == dh.cards.size) {
+            return
+        }
 
+        var holder = holderGeneral as CardHolder
         holder.card = dh.cards[position]
         holder.expanded = false
         ma.iv.setImages(holder.card.images)
@@ -78,9 +88,26 @@ class CardAdapter(con: Context) :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        var holder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card, parent, false))
+    override fun getItemViewType(position: Int): Int {
+        // Just as an example, return 0 or 2 depending on position
+        // Note that unlike in ListView adapters, types don't have to be contiguous
+        return if (position == dh.cards.size) 1 else 0
+
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if (viewType == 1) {
+            var holder = EmptyHolder(
+                LayoutInflater.from(con).inflate(
+                    R.layout.loading_spinner,
+                    parent,
+                    false
+                )
+            )
+            return holder
+        }
+
+        var holder = CardHolder(LayoutInflater.from(con).inflate(R.layout.card, parent, false))
 
         with(holder) {
             ivContainer.setOnClickListener {
@@ -130,12 +157,12 @@ class CardAdapter(con: Context) :
 
 
     override fun getItemCount(): Int {
-        return dh.cards.size
+        return dh.cards.size + 1
     }
 
 }
 
-class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
+class CardHolder(root: View) : RecyclerView.ViewHolder(root) {
     var expanded = false
     var card = Card()
     var h: TextView = root.findViewById(R.id.h)
@@ -146,3 +173,5 @@ class ViewHolder(root: View) : RecyclerView.ViewHolder(root) {
     var ivTwo: ViewGroup = root.findViewById(R.id.image_two)
     var ivThree: ViewGroup = root.findViewById(R.id.image_three_or_plus)
 }
+
+class EmptyHolder(root: View) : RecyclerView.ViewHolder(root)

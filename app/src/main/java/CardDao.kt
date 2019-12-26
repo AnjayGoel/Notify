@@ -40,8 +40,8 @@ interface CardDao {
     @Query("SELECT COUNT(1) FROM data WHERE id = :id")
     fun has(id: Long): Boolean
 
-    @Query("SELECT * FROM data LIMIT (SELECT COUNT(id) FROM data)-:count,:count")
-    fun get(count: Int): List<Card>
+    @Query("SELECT * FROM data ORDER BY timestamp DESC LIMIT :limit OFFSET :offset")
+    fun get(limit: Int, offset: Int): List<Card>
 
 
 }

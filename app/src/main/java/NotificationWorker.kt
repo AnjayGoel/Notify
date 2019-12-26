@@ -46,7 +46,7 @@ class NotificationWorker(var con: Context, workerParams: WorkerParameters) :
     companion object {
         fun startNewRequest(con: Context) {
             var builder = OneTimeWorkRequest.Builder(NotificationWorker::class.java)
-            builder.setInitialDelay(2, TimeUnit.SECONDS)
+            builder.setInitialDelay(5, TimeUnit.MINUTES)
             builder.setConstraints(Constraints.NONE)
             var workRequest = builder.build()
             WorkManager.getInstance(con).enqueue(workRequest)
