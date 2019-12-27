@@ -10,7 +10,6 @@ class DataHandler {
     lateinit var cardDao: CardDao
     var cards = mutableListOf<Card>()
     lateinit var spe: SharedPreferences.Editor
-
     fun addCard(c: Card) {
         cards.add(c)
         cardDao.insert(c)

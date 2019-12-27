@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (imageViewOnScreen) {
             imageViewOnScreen = false
+            iv.setImages(mutableListOf(), this)
             (iv.parent as ViewGroup).removeView(iv)
             supportActionBar?.show()
         } else {

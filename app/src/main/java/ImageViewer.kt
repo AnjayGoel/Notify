@@ -9,24 +9,21 @@ import com.smarteist.autoimageslider.SliderAnimations
 import com.smarteist.autoimageslider.SliderView
 
 class ImageViewer : FrameLayout {
-    var iv: SliderView
+    var sliderView: SliderView
 
     constructor(con: Context, images: MutableList<String>) : super(con) {
-        var mv = LayoutInflater.from(con).inflate(R.layout.image_viewer, null)
-        iv = mv.findViewById(R.id.slider)
-        iv.sliderAdapter = SliderImageAdapter(con, images)
-
-        iv.setIndicatorAnimation(IndicatorAnimations.WORM)
-        iv.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION)
-        iv.autoCycleDirection = SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH
-        iv.indicatorSelectedColor = Color.WHITE
-        iv.indicatorUnselectedColor = Color.GRAY
+        var mv = LayoutInflater.from(con).inflate(R.layout.slider_image_viewer, null)
+        sliderView = mv.findViewById(R.id.ssiv)
+        sliderView.sliderAdapter = SliderImageAdapter(con, images)
+        sliderView.setIndicatorAnimation(IndicatorAnimations.WORM)
+        sliderView.setSliderTransformAnimation(SliderAnimations.ZOOMOUTTRANSFORMATION)
+        sliderView.indicatorSelectedColor = Color.WHITE
+        sliderView.indicatorUnselectedColor = Color.GRAY
         addView(mv)
     }
 
-    fun setImages(images: MutableList<String>) {
-        (iv.sliderAdapter as SliderImageAdapter).images = images
-        iv.sliderAdapter.notifyDataSetChanged()
+    fun setImages(images: MutableList<String>, con: Context) {
+        sliderView.sliderAdapter = SliderImageAdapter(con, images)
     }
 
 }

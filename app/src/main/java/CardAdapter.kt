@@ -8,14 +8,21 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import com.bumptech.glide.Glide
 
 class CardAdapter(var con: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var ma = con as MainActivity
     var dh = DataHandler.getInstance(con)
+    val loader = CircularProgressDrawable(con)
 
-
+    init {
+        loader.strokeWidth = 5f
+        loader.centerRadius = 30f
+        loader.start()
+    }
     override fun onViewRecycled(holderGeneral: RecyclerView.ViewHolder) {
         // Set all views to visible for next card
         if (holderGeneral !is CardHolder) {
@@ -38,7 +45,6 @@ class CardAdapter(var con: Context) :
         var holder = holderGeneral as CardHolder
         holder.card = dh.cards[position]
         holder.expanded = false
-        ma.iv.setImages(holder.card.images)
         //heading
         if (holder.card.head == "") {
             holder.h.visibility = View.GONE
@@ -73,15 +79,33 @@ class CardAdapter(var con: Context) :
                 }
                 1 -> {
                     holder.ivContainer.addView(holder.ivOne)
+                    Glide.with(con).load(holder.card.images[0]).placeholder(loader)
+                        .into(holder.ivOne.findViewById(R.id.thumb1))
                 }
                 2 -> {
                     holder.ivContainer.addView(holder.ivTwo)
+                    Glide.with(con).load(holder.card.images[0]).placeholder(loader)
+                        .into(holder.ivTwo.findViewById(R.id.thumb2))
+                    Glide.with(con).load(holder.card.images[1]).placeholder(loader)
+                        .into(holder.ivTwo.findViewById(R.id.thumb3))
                 }
                 3 -> {
                     holder.ivContainer.addView(holder.ivThree)
+                    Glide.with(con).load(holder.card.images[0]).placeholder(loader)
+                        .into(holder.ivThree.findViewById(R.id.thumb4))
+                    Glide.with(con).load(holder.card.images[1]).placeholder(loader)
+                        .into(holder.ivThree.findViewById(R.id.thumb5))
+                    Glide.with(con).load(holder.card.images[2]).placeholder(loader)
+                        .into(holder.ivThree.findViewById(R.id.thumb6))
                 }
                 else -> {
                     holder.ivContainer.addView(holder.ivThree)
+                    Glide.with(con).load(holder.card.images[0]).placeholder(loader)
+                        .into(holder.ivThree.findViewById(R.id.thumb4))
+                    Glide.with(con).load(holder.card.images[1]).placeholder(loader)
+                        .into(holder.ivThree.findViewById(R.id.thumb5))
+                    Glide.with(con).load(holder.card.images[2]).placeholder(loader)
+                        .into(holder.ivThree.findViewById(R.id.thumb6))
                 }
 
             }
@@ -99,6 +123,7 @@ class CardAdapter(var con: Context) :
         if (viewType == 1) {
             var holder = EmptyHolder(
                 LayoutInflater.from(con).inflate(
+
                     R.layout.loading_spinner,
                     parent,
                     false
@@ -111,9 +136,8 @@ class CardAdapter(var con: Context) :
 
         with(holder) {
             ivContainer.setOnClickListener {
-                ma.supportActionBar?.hide()
                 ma.imageViewOnScreen = true
-                ma.iv.setImages(holder.card.images)
+                ma.iv.setImages(holder.card.images, con)
                 ma.addContentView(
                     ma.iv,
                     ViewGroup.LayoutParams(
@@ -121,6 +145,7 @@ class CardAdapter(var con: Context) :
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
                 )
+                ma.supportActionBar?.hide()
             }
 
             ivContainer.clipToOutline = true
@@ -140,7 +165,6 @@ class CardAdapter(var con: Context) :
                     }
                 } else {
                     expanded = true
-
                     if (card.body.length > 350) {
                         body.text = HtmlCompat.fromHtml(
                             card.body + " <font color='#cccccc'> <u>View Less</u></font>",

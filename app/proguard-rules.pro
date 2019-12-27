@@ -19,16 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-release {
-    //Enable the proguard
-    minifyEnabled true
-    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), "proguard-rules.pro"
-
-    //Other parameters
-    debuggable false
-    jniDebuggable false
-    renderscriptDebuggable false
-    signingConfig playStoreConfig //Add your own signing config
-    pseudoLocalesEnabled false
-    zipAlignEnabled true
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
 }

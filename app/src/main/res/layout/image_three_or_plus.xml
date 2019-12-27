@@ -6,7 +6,7 @@
     android:weightSum="1">
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/thumb4"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.55"
@@ -26,7 +26,7 @@
         android:weightSum="1">
 
         <ImageView
-            android:id="@+id/imageView5"
+            android:id="@+id/thumb5"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.49725"
@@ -40,7 +40,7 @@
             android:layout_weight="0.01" />
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/thumb6"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.49725"
