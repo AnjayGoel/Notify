@@ -15,7 +15,7 @@ var LASTTIME: Long = 0
 fun lg(s: String) {
     Log.d(
         TAG,
-        "---> Total Time: " + (System.currentTimeMillis() - STARTTIME) + " Difference: " + (System.currentTimeMillis() - LASTTIME) + " : " + s
+        "TT:" + (System.currentTimeMillis() - STARTTIME) + " Diff:" + (System.currentTimeMillis() - LASTTIME) + "--> " + s
     )
     LASTTIME = System.currentTimeMillis()
 }

@@ -10,6 +10,7 @@ class DataHandler {
     lateinit var cardDao: CardDao
     var cards = mutableListOf<Card>()
     lateinit var spe: SharedPreferences.Editor
+
     fun addCard(c: Card) {
         cards.add(c)
         cardDao.insert(c)
@@ -20,6 +21,7 @@ class DataHandler {
         cards.addAll(cl)
     }
 
+
     private constructor(con: Context) {
         Thread(Runnable {
             db = AppDatabase.getAppDataBase(context = con)!!
@@ -28,7 +30,13 @@ class DataHandler {
                 spe = con.getSharedPreferences("prefs", 0).edit()
                 spe.putLong("FirstInstallTime", System.currentTimeMillis())
                 spe.putLong("DataUpdateTime", 0)
-                addCards(FacebookHandler.getPosts(0))
+                var cl = FacebookHandler.getPosts(0)
+                if (cl != null) {
+                    addCards(cl)
+                } else {
+                    //TODO some error message
+                }
+
             } else {
                 cards = cardDao.getAll().toMutableList()
             }

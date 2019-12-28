@@ -9,7 +9,7 @@ import org.json.JSONObject
 
 class FacebookHandler {
     companion object {
-        var accessToken: AccessToken = AccessToken(
+        private var accessToken: AccessToken = AccessToken(
             "EAARH1QElcjMBAJkL47TmcPt3PX8hqZCTrncG8T14UfVH1ZCZBphiJ4WcXG68xb3ig7mvELWvVdOmvSJOx7dURZA1u5de53eFQQGBwvNJ6F5dwywxsK7ZCSlGurACIWdKO2OOroZAjXSrs2Or01tnAQdCirWvK02ZBQIjbpaoMFgybL1jJgap9zbHuFRjtxf238ZD",
             "1204880079680051",
             "106412340868788",
@@ -77,7 +77,7 @@ class FacebookHandler {
             return c
         }
 
-        fun getLatestUpdateTime(): Long {
+        fun getLatestUpdateTime(): Long? {
             val request = GraphRequest.newMeRequest(
                 accessToken
             ) { `object`, response ->
@@ -88,6 +88,9 @@ class FacebookHandler {
             request.parameters = parameters
 
             var resp = request.executeAndWait()
+            if (resp.error != null) {
+                return null
+            }
             var ts = resp.jsonObject.getJSONObject("posts").getJSONArray("data").getJSONObject(0)
                 .getString("updated_time")
 
@@ -95,7 +98,18 @@ class FacebookHandler {
 
         }
 
-        fun getPosts(t: Long): MutableList<Card> {
+        fun latestPosts(): MutableList<Card>? {
+            var lut = getLatestUpdateTime()
+            if (lut != null) {
+                var cl = getPosts(lut)
+                if (cl != null) {
+                    return cl
+                }
+            }
+            return null
+        }
+
+        fun getPosts(t: Long): MutableList<Card>? {
 
             /* TODO
         *  Handle connection interrupts and other cases
@@ -119,9 +133,8 @@ class FacebookHandler {
             lg("getPosts finished init")
             do {
                 var resp = request.executeAndWait()
-                lg("resp recieved")
-                if (resp == null) {
-                    return mutableListOf()
+                if (resp.error != null) {
+                    return null
                 }
 
                 var posts = resp.jsonObject.getJSONArray("data")

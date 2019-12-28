@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -24,6 +25,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         STARTTIME = System.currentTimeMillis()
 
+
+        NotificationWorker.createNotificationChannel(
+            this,
+            NotificationManagerCompat.IMPORTANCE_HIGH,
+            true,
+            "Updates",
+            "Post Updates"
+        )
         NotificationWorker.startNewRequest(this)
 
         h = Handler(mainLooper)
@@ -39,14 +48,17 @@ class MainActivity : AppCompatActivity() {
                 var t = FacebookHandler.getLatestUpdateTime()
                 if (t != dh.cardDao.getLastUpdate()) {
                     var cl = FacebookHandler.getPosts(dh.cardDao.getLastUpdate())
-                    dh.addCards(cl)
+                    if (cl != null) {
+                        dh.addCards(cl)
+                    } else {
+                        //TODO error message
+                    }
                 }
                 srv.isRefreshing = false
             }).start()
         }
 
         Thread(Runnable {
-            //
             while (true) {
                 if (dh.oldCount != dh.cards.size) {
                     h.post {
