@@ -9,6 +9,9 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
+import com.anjay.notify.activities.MainActivity
+import com.anjay.notify.handlers.DataHandler
+import com.anjay.notify.handlers.FacebookHandler
 import java.util.concurrent.TimeUnit
 
 class NotificationWorker(var con: Context, workerParams: WorkerParameters) :
@@ -23,7 +26,11 @@ class NotificationWorker(var con: Context, workerParams: WorkerParameters) :
             if (posts != null) {
                 DataHandler.getInstance(con).addCards(posts)
             }
-            notify("New Posts", "You have some unread posts", con)
+            notify(
+                "New Posts",
+                "You have some unread posts",
+                con
+            )
         }
 
         startNewRequest(con)

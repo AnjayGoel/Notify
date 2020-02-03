@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.room
 
 import androidx.room.TypeConverter
 

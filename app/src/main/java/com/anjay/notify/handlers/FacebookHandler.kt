@@ -1,6 +1,9 @@
-package com.anjay.notify
+package com.anjay.notify.handlers
 
 import android.os.Bundle
+import com.anjay.notify.lg
+import com.anjay.notify.room.Card
+import com.anjay.notify.timestampFromString
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.GraphResponse
@@ -29,7 +32,8 @@ class FacebookHandler {
             var c = Card()
 
             c.id = j.getString("id").split('_')[1].toLong()
-            c.timestamp = timestampFromString(j.getString("updated_time"))
+            c.timestamp =
+                timestampFromString(j.getString("updated_time"))
             c.body = j.getString("message").replace(Regex.fromLiteral("(\\r|\\n|\\r\\n)+"), "\\\\n")
 
             if (j.has("message_tags")) {
@@ -99,9 +103,13 @@ class FacebookHandler {
         }
 
         fun latestPosts(): MutableList<Card>? {
-            var lut = getLatestUpdateTime()
+            var lut =
+                getLatestUpdateTime()
             if (lut != null) {
-                var cl = getPosts(lut)
+                var cl =
+                    getPosts(
+                        lut
+                    )
                 if (cl != null) {
                     return cl
                 }
@@ -140,7 +148,10 @@ class FacebookHandler {
                 var posts = resp.jsonObject.getJSONArray("data")
                 for (i in 0 until posts.length()) {
 
-                    var c = cardFromResp(posts.getJSONObject(i))
+                    var c =
+                        cardFromResp(
+                            posts.getJSONObject(i)
+                        )
                     if (c.timestamp < t) return cl
                     else cl.add(c)
                 }

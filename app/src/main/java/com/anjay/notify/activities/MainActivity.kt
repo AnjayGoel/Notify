@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.activities
 
 import android.os.Bundle
 import android.os.Handler
@@ -7,13 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.anjay.notify.*
+import com.anjay.notify.adapters.CardAdapter
+import com.anjay.notify.handlers.DataHandler
+import com.anjay.notify.handlers.FacebookHandler
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var mrv: RecyclerView
-    lateinit var srv: SwipeRefreshLayout
     var dh = DataHandler.getInstance(this)
     lateinit var iv: ImageViewer
     lateinit var h: Handler
@@ -38,11 +40,9 @@ class MainActivity : AppCompatActivity() {
         h = Handler(mainLooper)
         iv = ImageViewer(baseContext, mutableListOf("a", "b"))
 
-        mrv = findViewById(R.id.mrv)
         mrv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         mrv.adapter = CardAdapter(this)
 
-        srv = findViewById(R.id.swiperefresh)
         srv.setOnRefreshListener {
             Thread(Runnable {
                 var t = FacebookHandler.getLatestUpdateTime()

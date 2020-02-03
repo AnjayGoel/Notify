@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.room
 
 import androidx.room.*
 
@@ -42,6 +42,4 @@ interface CardDao {
 
     @Query("SELECT * FROM data ORDER BY timestamp DESC LIMIT :limit OFFSET :offset")
     fun get(limit: Int, offset: Int): List<Card>
-
-
 }

@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.room
 
 import android.content.Context
 import androidx.room.Database

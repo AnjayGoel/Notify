@@ -1,4 +1,4 @@
-package com.anjay.notify
+package com.anjay.notify.adapters
 
 import android.content.Context
 import android.text.util.Linkify
@@ -9,7 +9,17 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import com.anjay.notify.R
+import com.anjay.notify.activities.MainActivity
+import com.anjay.notify.handlers.DataHandler
+import com.anjay.notify.lg
+import com.anjay.notify.room.Card
+import com.anjay.notify.timeToString
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.card.view.*
+import kotlinx.android.synthetic.main.image_one.view.*
+import kotlinx.android.synthetic.main.image_three_or_plus.view.*
+import kotlinx.android.synthetic.main.image_two.view.*
 
 class CardAdapter(var con: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -67,7 +77,8 @@ class CardAdapter(var con: Context) :
         }
         Linkify.addLinks(holder.body, Linkify.ALL)
         //date
-        holder.posttime.text = timeToString(holder.card.timestamp)
+        holder.posttime.text =
+            timeToString(holder.card.timestamp)
 
         //images
         if (holder.card.images.toString() == "[]") {
@@ -80,32 +91,32 @@ class CardAdapter(var con: Context) :
                 1 -> {
                     holder.ivContainer.addView(holder.ivOne)
                     Glide.with(con).load(holder.card.images[0]).placeholder(loader)
-                        .into(holder.ivOne.findViewById(R.id.thumb1))
+                        .into(holder.ivOne.thumb1)
                 }
                 2 -> {
                     holder.ivContainer.addView(holder.ivTwo)
                     Glide.with(con).load(holder.card.images[0]).placeholder(loader)
-                        .into(holder.ivTwo.findViewById(R.id.thumb2))
+                        .into(holder.ivTwo.thumb2)
                     Glide.with(con).load(holder.card.images[1]).placeholder(loader)
-                        .into(holder.ivTwo.findViewById(R.id.thumb3))
+                        .into(holder.ivTwo.thumb3)
                 }
                 3 -> {
                     holder.ivContainer.addView(holder.ivThree)
                     Glide.with(con).load(holder.card.images[0]).placeholder(loader)
-                        .into(holder.ivThree.findViewById(R.id.thumb4))
+                        .into(holder.ivThree.thumb4)
                     Glide.with(con).load(holder.card.images[1]).placeholder(loader)
-                        .into(holder.ivThree.findViewById(R.id.thumb5))
+                        .into(holder.ivThree.thumb5)
                     Glide.with(con).load(holder.card.images[2]).placeholder(loader)
-                        .into(holder.ivThree.findViewById(R.id.thumb6))
+                        .into(holder.ivThree.thumb6)
                 }
                 else -> {
                     holder.ivContainer.addView(holder.ivThree)
                     Glide.with(con).load(holder.card.images[0]).placeholder(loader)
-                        .into(holder.ivThree.findViewById(R.id.thumb4))
+                        .into(holder.ivThree.thumb4)
                     Glide.with(con).load(holder.card.images[1]).placeholder(loader)
-                        .into(holder.ivThree.findViewById(R.id.thumb5))
+                        .into(holder.ivThree.thumb5)
                     Glide.with(con).load(holder.card.images[2]).placeholder(loader)
-                        .into(holder.ivThree.findViewById(R.id.thumb6))
+                        .into(holder.ivThree.thumb6)
                 }
 
             }
@@ -132,7 +143,13 @@ class CardAdapter(var con: Context) :
             return holder
         }
 
-        var holder = CardHolder(LayoutInflater.from(con).inflate(R.layout.card, parent, false))
+        var holder = CardHolder(
+            LayoutInflater.from(con).inflate(
+                R.layout.card,
+                parent,
+                false
+            )
+        )
 
         with(holder) {
             ivContainer.setOnClickListener {
@@ -189,13 +206,13 @@ class CardAdapter(var con: Context) :
 class CardHolder(root: View) : RecyclerView.ViewHolder(root) {
     var expanded = false
     var card = Card()
-    var h: TextView = root.findViewById(R.id.h)
-    var posttime: TextView = root.findViewById(R.id.posttime)
-    var body: TextView = root.findViewById(R.id.body)
-    var ivContainer: ViewGroup = root.findViewById(R.id.iv_container)
-    var ivOne: ViewGroup = root.findViewById(R.id.image_one)
-    var ivTwo: ViewGroup = root.findViewById(R.id.image_two)
-    var ivThree: ViewGroup = root.findViewById(R.id.image_three_or_plus)
+    var h: TextView = root.h
+    var posttime: TextView = root.posttime
+    var body: TextView = root.body
+    var ivContainer: ViewGroup = root.iv_container
+    var ivOne: ViewGroup = root.image_one as ViewGroup
+    var ivTwo: ViewGroup = root.image_two as ViewGroup
+    var ivThree: ViewGroup = root.image_three_or_plus as ViewGroup
 }
 
 class EmptyHolder(root: View) : RecyclerView.ViewHolder(root)

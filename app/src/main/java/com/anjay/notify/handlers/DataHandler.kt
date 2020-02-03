@@ -1,7 +1,10 @@
-package com.anjay.notify
+package com.anjay.notify.handlers
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.anjay.notify.room.AppDatabase
+import com.anjay.notify.room.Card
+import com.anjay.notify.room.CardDao
 
 class DataHandler {
 
@@ -49,7 +52,8 @@ class DataHandler {
         private var instance: DataHandler? = null
         fun getInstance(con: Context): DataHandler {
             if (instance == null) {
-                instance = DataHandler(con)
+                instance =
+                    DataHandler(con)
             }
             return instance!!
         }
